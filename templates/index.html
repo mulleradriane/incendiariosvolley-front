@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMISETAS</title>
+    <link rel="stylesheet" href="static/style.css">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+</head>
+
+<body>
+
+    <div class="wrapper">
+        <form action="">
+            <img src="../static/incendiarioslogoi.png" alt="Logo" class="logo">
+            
+            <div class="input-box">
+                <input type="text" id="nome" placeholder="Seu Nome" required>
+                <i class='bx bx-user'></i>
+            </div>
+            <div class="input-box">
+                <input type="text" id="nome-camiseta" placeholder="Nome na camiseta" required>
+                <i class='bx bxs-t-shirt'></i>
+            </div>
+            <div class="input-box">
+                <select name="Tamanho Camiseta" id="opcoes" class="custom-select" required>
+                    <option value="" disabled selected>Tamanho</option>
+                    <option value="P">P</option>
+                    <option value="M">M</option>
+                    <option value="G">G</option>
+                    <option value="GG">GG</option>
+                </select>
+                <i class='bx bx-chevron-down'></i>
+            </div>
+
+            <div class="input-box">
+                <select name="Número desejado na camiseta" id="numero" class="custom-select" required>
+                    <option value="" disabled selected>Número</option>
+                    <script>
+                        for (let num = 1; num <= 99; num++) {
+                            document.write(`<option value="${num}">${num}</option>`);
+                        }
+                    </script>
+                </select>
+                <i class='bx bx-chevron-down'></i>
+            </div>
+
+            <button type="submit" class="btn">Enviar</button>
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectElement = document.getElementById('numero');
+
+            selectElement.addEventListener('change', function () {
+                console.log('Opção selecionada:', this.value); // Verifique no console do navegador
+            });
+        });
+    </script>
+
+</body>
+</html>
