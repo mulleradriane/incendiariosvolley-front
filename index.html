@@ -43,7 +43,9 @@
                 <i class='bx bx-chevron-down'></i>
             </div>
 
-            <button type="submit" class="btn">Enviar</button>
+            <button type="submit" class="btn">
+                <span id="button-text">Enviar</span>
+            </button>
         </form>
     </div>
 
@@ -60,10 +62,12 @@
             const modal = document.getElementById('modal');
             const modalMessage = document.getElementById('modal-message');
             const closeModal = document.getElementById('close-modal');
+            const buttonText = document.getElementById('button-text');
 
             // Função para exibir o modal com uma mensagem
-            function showModal(message) {
+            function showModal(message, isSuccess = true) {
                 modalMessage.innerText = message;
+                modalMessage.style.color = isSuccess ? 'green' : 'red';
                 modal.style.display = 'block';
             }
 
@@ -81,34 +85,51 @@
 
             // Envio do formulário
             document.getElementById('formularioInscricao').addEventListener('submit', async (event) => {
-                event.preventDefault();  // Impede o envio padrão do formulário
+                event.preventDefault();
 
-                const formData = {
-                    nome: document.getElementById('nome').value,
-                    nome_camiseta: document.getElementById('nome-camiseta').value,
-                    numero: parseInt(document.getElementById('numero').value),
-                    tamanho: document.getElementById('tamanho').value,
-                };
-
+                const form = event.target;
+                const button = form.querySelector('button[type="submit"]');
+                
                 try {
+                    // Mostra estado de carregamento
+                    button.disabled = true;
+                    buttonText.innerHTML = 'Enviando <i class="bx bx-loader-alt bx-spin"></i>';
+                    
+                    const formData = {
+                        nome: document.getElementById('nome').value,
+                        nome_camiseta: document.getElementById('nome-camiseta').value,
+                        numero: parseInt(document.getElementById('numero').value),
+                        tamanho: document.getElementById('tamanho').value,
+                    };
+
                     const response = await fetch('https://kv6unhx384.execute-api.us-east-1.amazonaws.com/prd/jogadores', {
                         method: 'POST',
+                        mode: 'cors',
                         headers: {
                             'Content-Type': 'application/json',
+                            'Accept': 'application/json'
                         },
                         body: JSON.stringify(formData),
                     });
 
-                    if (response.ok) {
-                        showModal('Inscrição realizada com sucesso!');
-                        document.getElementById('formularioInscricao').reset();  // Limpa o formulário
-                    } else {
-                        const erro = await response.json();
-                        showModal(`Erro: ${erro.message || 'Erro desconhecido'}`);
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        throw new Error(data.message || `Erro no servidor (status ${response.status})`);
                     }
+
+                    showModal('Inscrição realizada com sucesso!', true);
+                    form.reset();
                 } catch (erro) {
-                    showModal('Erro ao enviar inscrição. Tente novamente.');
-                    console.error('Erro:', erro);
+                    console.error('Erro detalhado:', erro);
+                    const errorMessage = erro.message.includes('Failed to fetch') 
+                        ? 'Falha na conexão com o servidor. Verifique sua internet e tente novamente.'
+                        : erro.message;
+                    
+                    showModal(errorMessage, false);
+                } finally {
+                    button.disabled = false;
+                    buttonText.textContent = 'Enviar';
                 }
             });
         });
