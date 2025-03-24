@@ -12,7 +12,7 @@ body {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: url('quadra.jpg') no-repeat;
+    background: url('public/quadra.jpg') no-repeat;
     background-size: cover;
     background-position: center;
     padding: 20px; /* Adiciona padding para telas menores */
