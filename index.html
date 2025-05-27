@@ -54,21 +54,23 @@
     <script>
         document.addEventListener('DOMContentLoaded', async function () {
             const numeroSelect = document.getElementById('numero');
-        
+    
             try {
-                // Busca os jogadores cadastrados
                 const response = await fetch('https://kv6unhx384.execute-api.us-east-1.amazonaws.com/prd/jogadores');
-                const jogadores = await response.json();
-        
+                let data = await response.json();
+    
+                // Corrigir o tipo se o backend retornar string JSON
+                const jogadores = typeof data === 'string' ? JSON.parse(data) : data;
+    
                 const numerosUsados = new Set(jogadores.map(j => j.numero));
                 const numerosDisponiveis = [];
-        
+    
                 for (let i = 1; i <= 99; i++) {
                     if (!numerosUsados.has(i)) {
                         numerosDisponiveis.push(i);
                     }
                 }
-        
+    
                 numeroSelect.innerHTML = '<option value="" disabled selected>Selecione o número</option>';
                 numerosDisponiveis.forEach(numero => {
                     const option = document.createElement('option');
@@ -76,12 +78,13 @@
                     option.textContent = numero;
                     numeroSelect.appendChild(option);
                 });
-        
+    
             } catch (err) {
                 console.error('Erro ao carregar números disponíveis:', err);
                 numeroSelect.innerHTML = '<option disabled selected>Erro ao carregar números</option>';
             }
         });
-        </script>        
+    </script>
+    
 </body>
 </html>
