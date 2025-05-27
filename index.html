@@ -33,16 +33,10 @@
             </div>
             <div class="input-box">
                 <select id="numero" class="custom-select" required>
-                    <option value="" disabled selected>Número</option>
-                    <script>
-                        for (let num = 1; num <= 99; num++) {
-                            document.write(`<option value="${num}">${num}</option>`);
-                        }
-                    </script>
+                    <option value="" disabled selected>Carregando...</option>
                 </select>
                 <i class='bx bx-chevron-down'></i>
-            </div>
-
+            </div>            
             <button type="submit" class="btn">
                 <span id="button-text">Enviar</span>
             </button>
@@ -58,81 +52,36 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const modal = document.getElementById('modal');
-            const modalMessage = document.getElementById('modal-message');
-            const closeModal = document.getElementById('close-modal');
-            const buttonText = document.getElementById('button-text');
-
-            // Função para exibir o modal com uma mensagem
-            function showModal(message, isSuccess = true) {
-                modalMessage.innerText = message;
-                modalMessage.style.color = isSuccess ? 'green' : 'red';
-                modal.style.display = 'block';
-            }
-
-            // Fechar o modal ao clicar no "X"
-            closeModal.addEventListener('click', function () {
-                modal.style.display = 'none';
-            });
-
-            // Fechar o modal ao clicar fora dele
-            window.addEventListener('click', function (event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                }
-            });
-
-            // Envio do formulário
-            document.getElementById('formularioInscricao').addEventListener('submit', async (event) => {
-                event.preventDefault();
-
-                const form = event.target;
-                const button = form.querySelector('button[type="submit"]');
-                
-                try {
-                    // Mostra estado de carregamento
-                    button.disabled = true;
-                    buttonText.innerHTML = 'Enviando <i class="bx bx-loader-alt bx-spin"></i>';
-                    
-                    const formData = {
-                        nome: document.getElementById('nome').value,
-                        nome_camiseta: document.getElementById('nome-camiseta').value,
-                        numero: parseInt(document.getElementById('numero').value),
-                        tamanho: document.getElementById('tamanho').value,
-                    };
-
-                    const response = await fetch('https://kv6unhx384.execute-api.us-east-1.amazonaws.com/prd/jogadores', {
-                        method: 'POST',
-                        mode: 'cors',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Accept': 'application/json'
-                        },
-                        body: JSON.stringify(formData),
-                    });
-
-                    const data = await response.json();
-
-                    if (!response.ok) {
-                        throw new Error(data.message || `Erro no servidor (status ${response.status})`);
+        document.addEventListener('DOMContentLoaded', async function () {
+            const numeroSelect = document.getElementById('numero');
+        
+            try {
+                // Busca os jogadores cadastrados
+                const response = await fetch('https://kv6unhx384.execute-api.us-east-1.amazonaws.com/prd/jogadores');
+                const jogadores = await response.json();
+        
+                const numerosUsados = new Set(jogadores.map(j => j.numero));
+                const numerosDisponiveis = [];
+        
+                for (let i = 1; i <= 99; i++) {
+                    if (!numerosUsados.has(i)) {
+                        numerosDisponiveis.push(i);
                     }
-
-                    showModal('Inscrição realizada com sucesso!', true);
-                    form.reset();
-                } catch (erro) {
-                    console.error('Erro detalhado:', erro);
-                    const errorMessage = erro.message.includes('Failed to fetch') 
-                        ? 'Falha na conexão com o servidor. Verifique sua internet e tente novamente.'
-                        : erro.message;
-                    
-                    showModal(errorMessage, false);
-                } finally {
-                    button.disabled = false;
-                    buttonText.textContent = 'Enviar';
                 }
-            });
+        
+                numeroSelect.innerHTML = '<option value="" disabled selected>Selecione o número</option>';
+                numerosDisponiveis.forEach(numero => {
+                    const option = document.createElement('option');
+                    option.value = numero;
+                    option.textContent = numero;
+                    numeroSelect.appendChild(option);
+                });
+        
+            } catch (err) {
+                console.error('Erro ao carregar números disponíveis:', err);
+                numeroSelect.innerHTML = '<option disabled selected>Erro ao carregar números</option>';
+            }
         });
-    </script>
+        </script>        
 </body>
 </html>
