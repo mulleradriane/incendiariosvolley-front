@@ -162,7 +162,10 @@
                     const result = await response.json();
 
                     modalMessage.textContent = result.message || 'Resposta desconhecida da API.';
+                    modalMessage.classList.remove('error');
+                    modalMessage.classList.add('success');
                     modal.style.display = 'block';
+
 
                     if (response.ok) {
                         formulario.reset();
@@ -171,8 +174,10 @@
 
                 } catch (error) {
                     modalMessage.textContent = 'Erro ao enviar inscrição.';
+                    modalMessage.classList.remove('success');
+                    modalMessage.classList.add('error');
                     modal.style.display = 'block';
-                    console.error('Erro no envio:', error);
+
                 }
 
                 // Reativa botão
