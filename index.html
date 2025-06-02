@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Incendiários - Escolha</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-color: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+    }
+    h1 {
+      margin-bottom: 30px;
+      text-align: center;
+    }
+    .btn {
+      background-color: #ff3c3c;
+      color: white;
+      padding: 18px 30px;
+      margin: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #e33434;
+    }
+    .logo {
+      max-width: 150px;
+      margin-bottom: 20px;
+    }
+
+    @media (max-width: 600px) {
+      h1 {
+        font-size: 22px;
+      }
+      .btn {
+        font-size: 20px;
+        padding: 18px 24px;
+      }
+      .logo {
+        max-width: 120px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <img src="../static/incendiarioslogoi.png" alt="Logo" class="logo">
+  <h1>Você já tem camiseta e número definido?</h1>
+  <button class="btn" onclick="window.location.href='editar.html'">Sim!</button>
+  <button class="btn" onclick="window.location.href='home.html'">Não!</button>
+</body>
+</html>
