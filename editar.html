@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Cadastro</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .readonly {
+      background-color: #e0e0e0; /* cinza claro */
+      color: #555;
+    }
+
+    #modal-message.success {
+      color: green;
+    }
+
+    #modal-message.error {
+      color: red;
+    }
+  
+@media (max-width: 600px) {
+  body {
+    padding: 10px;
+  }
+  .wrapper {
+    width: 100% !important;
+    padding: 10px;
+  }
+  .input-box input,
+  .input-box select {
+    font-size: 16px;
+    padding: 12px;
+  }
+  .btn {
+    font-size: 16px;
+    padding: 12px 20px;
+  }
+  .logo {
+    max-width: 100px !important;
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="wrapper">
+        <img src="../static/incendiarioslogoi.png" alt="Logo" class="logo" style="display: block; margin: 0 auto 20px;">
+    <form id="formEditar">
+      <h2 style="text-align:center;margin-bottom:10px;">Editar Dados da Camiseta</h2>
+      <div class="input-box">
+        <select id="numero" class="readonly" required>
+          <option value="" disabled selected>Selecione seu número</option>
+        </select>
+      </div>
+      <div class="input-box">
+        <input type="text" id="nome" placeholder="Seu nome" class="readonly" disabled>
+      </div>
+      <div class="input-box">
+        <input type="text" id="nomeCamiseta" placeholder="Nome na camiseta" required>
+      </div>
+      <div class="input-box">
+        <select id="tamanho" required>
+          <option value="" disabled selected>Selecione o tamanho</option>
+          <option value="P">P</option>
+          <option value="M">M</option>
+          <option value="G">G</option>
+          <option value="GG">GG</option>
+          <option value="G1">G1</option>
+          <option value="G2">G2</option>
+        </select>
+      </div>
+      <button type="submit" class="btn"><span id="btnText">Salvar</span></button>
+    </form>
+  </div>
+
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span id="close-modal" class="close">&times;</span>
+      <p id="modal-message"></p>
+    </div>
+  </div>
+
+  <script>
+    const apiUrl = 'https://kv6unhx384.execute-api.us-east-1.amazonaws.com/prd/jogadores';
+
+    async function carregarNumeros() {
+      const numeroSelect = document.getElementById('numero');
+      try {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+        data.sort((a, b) => a.numero - b.numero);
+        data.forEach(jogador => {
+          const option = document.createElement('option');
+          option.value = jogador.numero;
+          option.textContent = jogador.numero;
+          option.dataset.nome = jogador.nome;
+          option.dataset.nomeCamiseta = jogador.nome_camiseta;
+          option.dataset.tamanho = jogador.tamanho;
+          numeroSelect.appendChild(option);
+        });
+      } catch (err) {
+        alert('Erro ao carregar dados.');
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      await carregarNumeros();
+
+      const numeroSelect = document.getElementById('numero');
+      const nomeInput = document.getElementById('nome');
+      const nomeCamisaInput = document.getElementById('nomeCamiseta');
+      const tamanhoSelect = document.getElementById('tamanho');
+      const modal = document.getElementById('modal');
+      const modalMessage = document.getElementById('modal-message');
+      const closeModal = document.getElementById('close-modal');
+
+      numeroSelect.addEventListener('change', () => {
+        const selected = numeroSelect.options[numeroSelect.selectedIndex];
+        nomeInput.value = selected.dataset.nome || '';
+        nomeCamisaInput.value = selected.dataset.nomeCamiseta || '';
+        tamanhoSelect.value = selected.dataset.tamanho || '';
+
+        numeroSelect.disabled = true;
+      });
+
+      document.getElementById('formEditar').addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const payload = {
+          numero: parseInt(numeroSelect.value || numeroSelect.options[numeroSelect.selectedIndex].textContent),
+          nome: nomeInput.value.trim(),
+          nome_camiseta: nomeCamisaInput.value.trim(),
+          tamanho: tamanhoSelect.value
+        };
+
+        try {
+          const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+          modalMessage.textContent = data.message || 'Dados atualizados.';
+          modalMessage.classList.remove('error');
+          modalMessage.classList.add('success');
+          modal.style.display = 'block';
+        } catch (err) {
+          modalMessage.textContent = 'Erro ao atualizar.';
+          modalMessage.classList.remove('success');
+          modalMessage.classList.add('error');
+          modal.style.display = 'block';
+        }
+      });
+
+      closeModal.addEventListener('click', () => {
+        modal.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>
